@@ -2,8 +2,8 @@ use crate::blipbuf::BlipBuf;
 use crate::settings::{
     CLOCK_RATE, EFFECT_FADEOUT, EFFECT_NONE, EFFECT_SLIDE, EFFECT_VIBRATO, NOISE_VOLUME_FACTOR,
     NUM_CLOCKS_PER_TICK, OSCILLATOR_RESOLUTION, PULSE_VOLUME_FACTOR, SQUARE_VOLUME_FACTOR,
-    TONE_NOISE, TONE_PULSE, TONE_SQUARE, TONE_TRIANGLE, TRIANGLE_VOLUME_FACTOR, VIBRATO_DEPTH,
-    VIBRATO_FREQUENCY,
+    TONE_NOISE, TONE_PULSE, TONE_SQUARE, TONE_TRIANGLE, TONE_SAW, TONE_SINE, TRIANGLE_VOLUME_FACTOR, VIBRATO_DEPTH,
+    VIBRATO_FREQUENCY, SINE_VOLUME_FACTOR, SAW_VOLUME_FACTOR,
 };
 use crate::types::{Effect, Tone};
 
@@ -100,6 +100,8 @@ impl Oscillator {
                 TONE_SQUARE => Self::square(self.phase) * SQUARE_VOLUME_FACTOR,
                 TONE_PULSE => Self::pulse(self.phase) * PULSE_VOLUME_FACTOR,
                 TONE_NOISE => self.noise(self.phase) * NOISE_VOLUME_FACTOR,
+                TONE_SINE => Self::sine(self.phase) * SINE_VOLUME_FACTOR,
+                TONE_SAW => Self::saw(self.phase) * SAW_VOLUME_FACTOR,
                 _ => panic!("Invalid tone '{}'", self.tone),
             } * self.volume
                 * i16::MAX as f64) as i16;
@@ -166,5 +168,13 @@ impl Oscillator {
             self.noise |= feedback << 14;
         }
         (self.noise & 1) as f64 * 2.0 - 1.0
+    }
+
+    fn saw(phase: u32) -> f64 {
+        (OSCILLATOR_RESOLUTION - phase) as f64 / OSCILLATOR_RESOLUTION as f64 * 2.0 - 1.0
+    }
+
+    fn sine(phase: u32) -> f64 {
+        (phase as f64 / OSCILLATOR_RESOLUTION as f64 * 3.1415 * 2.0).sin()
     }
 }

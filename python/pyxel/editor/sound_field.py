@@ -12,7 +12,7 @@ from .settings import (
 from .widgets import Widget
 from .widgets.settings import WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
 
-TONE_KEY_TABLE = [pyxel.KEY_T, pyxel.KEY_S, pyxel.KEY_P, pyxel.KEY_N]
+TONE_KEY_TABLE = [pyxel.KEY_T, pyxel.KEY_S, pyxel.KEY_P, pyxel.KEY_N, pyxel.KEY_I, pyxel.KEY_W]
 EFFECT_KEY_TABLE = [pyxel.KEY_N, pyxel.KEY_S, pyxel.KEY_V, pyxel.KEY_F]
 
 
@@ -64,7 +64,7 @@ class SoundField(Widget):
             return
         value = None
         if cursor_y == 1:
-            for i in range(4):
+            for i in range(6):
                 if pyxel.btnp(TONE_KEY_TABLE[i], WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
                     value = i
                     break
@@ -104,7 +104,7 @@ class SoundField(Widget):
 
         # Draw field data
         data_str = []
-        data_str.append("".join(["TSPN"[v] for v in self.get_field(1)]))
+        data_str.append("".join(["TSPNIW"[v] for v in self.get_field(1)]))
         data_str.append("".join([str(v) for v in self.get_field(2)]))
         data_str.append("".join(["NSVF"[v] for v in self.get_field(3)]))
         for i in range(3):
