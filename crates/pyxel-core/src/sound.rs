@@ -3,7 +3,8 @@ use std::fmt::Write as _;
 use crate::resource::ResourceItem;
 use crate::settings::{
     EFFECT_FADEOUT, EFFECT_NONE, EFFECT_SLIDE, EFFECT_VIBRATO, INITIAL_SPEED,
-    RESOURCE_ARCHIVE_DIRNAME, TONE_NOISE, TONE_PULSE, TONE_SQUARE, TONE_TRIANGLE, TONE_SINE, TONE_SAW,
+    RESOURCE_ARCHIVE_DIRNAME, TONE_NOISE, TONE_PULSE, TONE_SAW, TONE_SINE, TONE_SQUARE,
+    TONE_TRIANGLE,
 };
 use crate::types::{Effect, Note, Speed, Tone, Volume};
 use crate::utils::{parse_hex_string, simplify_string};

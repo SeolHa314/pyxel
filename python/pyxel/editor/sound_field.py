@@ -12,7 +12,14 @@ from .settings import (
 from .widgets import Widget
 from .widgets.settings import WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
 
-TONE_KEY_TABLE = [pyxel.KEY_T, pyxel.KEY_S, pyxel.KEY_P, pyxel.KEY_N, pyxel.KEY_I, pyxel.KEY_W]
+TONE_KEY_TABLE = [
+    pyxel.KEY_T,
+    pyxel.KEY_S,
+    pyxel.KEY_P,
+    pyxel.KEY_N,
+    pyxel.KEY_I,
+    pyxel.KEY_W,
+]
 EFFECT_KEY_TABLE = [pyxel.KEY_N, pyxel.KEY_S, pyxel.KEY_V, pyxel.KEY_F]
 
 
