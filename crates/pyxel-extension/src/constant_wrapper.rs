@@ -45,10 +45,10 @@ pub fn add_module_constants(m: &PyModule) -> PyResult<()> {
     add_constant!(NUM_CHANNELS)?;
     add_constant!(NUM_SOUNDS)?;
     add_constant!(NUM_MUSICS)?;
-    add_constant!(TONE_TRIANGLE)?;
-    add_constant!(TONE_SQUARE)?;
-    add_constant!(TONE_PULSE)?;
-    add_constant!(TONE_NOISE)?;
+    // add_constant!(TONE_TRIANGLE)?;
+    // add_constant!(TONE_SQUARE)?;
+    // add_constant!(TONE_PULSE)?;
+    // add_constant!(TONE_NOISE)?;
     add_constant!(EFFECT_NONE)?;
     add_constant!(EFFECT_SLIDE)?;
     add_constant!(EFFECT_VIBRATO)?;

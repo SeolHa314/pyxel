@@ -2,11 +2,10 @@ use std::cmp::max;
 
 use crate::blipbuf::BlipBuf;
 use crate::oscillator::Oscillator;
-use crate::settings::{
-    EFFECT_NONE, INITIAL_GAIN, MAX_EFFECT, MAX_NOTE, MAX_TONE, MAX_VOLUME, TONE_TRIANGLE,
-};
+use crate::settings::Tone;
+use crate::settings::{EFFECT_NONE, INITIAL_GAIN, MAX_EFFECT, MAX_NOTE, MAX_VOLUME};
 use crate::sound::{SharedSound, Sound};
-use crate::types::{Effect, Note, Tone, Volume};
+use crate::types::{Effect, Note, Volume};
 
 pub struct Channel {
     oscillator: Oscillator,
@@ -112,7 +111,7 @@ impl Channel {
             let volume = Self::circular_volume(&sound.volumes, self.note_index);
             assert!(volume <= MAX_VOLUME, "invalid sound volume {volume}");
             let tone = Self::circular_tone(&sound.tones, self.note_index);
-            assert!(tone <= MAX_TONE, "invalid sound tone {tone}");
+            // assert!(tone <= MAX_TONE, "invalid sound tone {tone}");
             let effect = Self::circular_effect(&sound.effects, self.note_index);
             assert!(effect <= MAX_EFFECT, "invalid sound effect {effect}");
             let speed = max(sound.speed, 1);
@@ -145,7 +144,7 @@ impl Channel {
         if len > 0 {
             tones[index as usize % len]
         } else {
-            TONE_TRIANGLE
+            Tone::Triangle
         }
     }
 

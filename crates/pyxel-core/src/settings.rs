@@ -1,5 +1,7 @@
+use std::fmt;
+
 use crate::key::KEY_ESCAPE;
-use crate::types::{Color, Effect, Key, Note, Rgb8, Speed, Tone, Volume};
+use crate::types::{Color, Effect, Key, Note, Rgb8, Speed, Volume};
 
 // System
 pub const VERSION: &str = "1.9.18";
@@ -113,19 +115,48 @@ pub const PULSE_VOLUME_FACTOR: f64 = 0.3;
 pub const NOISE_VOLUME_FACTOR: f64 = 0.6;
 pub const SINE_VOLUME_FACTOR: f64 = 1.0;
 pub const SAW_VOLUME_FACTOR: f64 = 0.3;
-pub const TONE_TRIANGLE: Tone = 0;
-pub const TONE_SQUARE: Tone = 1;
-pub const TONE_PULSE: Tone = 2;
-pub const TONE_NOISE: Tone = 3;
-pub const TONE_SINE: Tone = 4;
-pub const TONE_SAW: Tone = 5;
+// pub const TONE_TRIANGLE: Tone = 0;
+// pub const TONE_SQUARE: Tone = 1;
+// pub const TONE_PULSE: Tone = 2;
+// pub const TONE_NOISE: Tone = 3;
+// pub const TONE_SINE: Tone = 4;
+// pub const TONE_SAW: Tone = 5;
 pub const EFFECT_NONE: Effect = 0;
 pub const EFFECT_SLIDE: Effect = 1;
 pub const EFFECT_VIBRATO: Effect = 2;
 pub const EFFECT_FADEOUT: Effect = 3;
-pub const MAX_TONE: Tone = 5;
+// pub const MAX_TONE: Tone = 5;
 pub const MAX_NOTE: Note = 59; // 5 octaves
 pub const MAX_VOLUME: Volume = 7;
 pub const MAX_EFFECT: Effect = 3;
 pub const INITIAL_SPEED: Speed = 30;
 pub const INITIAL_GAIN: u8 = 32;
+
+#[derive(PartialEq, Eq, Clone, Copy)]
+pub enum Tone {
+    Triangle,
+    Square,
+    Pulse,
+    Noise,
+    Sine,
+    Saw,
+}
+
+impl fmt::Debug for Tone {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match *self {
+            Self::Triangle => write!(f, "Triangle"),
+            Self::Square => write!(f, "Square"),
+            Self::Pulse => write!(f, "Pulse"),
+            Self::Noise => write!(f, "Noise"),
+            Self::Sine => write!(f, "Sine"),
+            Self::Saw => write!(f, "Saw"),
+        }
+    }
+}
+
+impl fmt::LowerHex for Tone {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", *self as i32)
+    }
+}

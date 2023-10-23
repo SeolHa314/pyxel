@@ -2,11 +2,10 @@ use std::fmt::Write as _;
 
 use crate::resource::ResourceItem;
 use crate::settings::{
-    EFFECT_FADEOUT, EFFECT_NONE, EFFECT_SLIDE, EFFECT_VIBRATO, INITIAL_SPEED,
-    RESOURCE_ARCHIVE_DIRNAME, TONE_NOISE, TONE_PULSE, TONE_SAW, TONE_SINE, TONE_SQUARE,
-    TONE_TRIANGLE,
+    Tone, EFFECT_FADEOUT, EFFECT_NONE, EFFECT_SLIDE, EFFECT_VIBRATO, INITIAL_SPEED,
+    RESOURCE_ARCHIVE_DIRNAME,
 };
-use crate::types::{Effect, Note, Speed, Tone, Volume};
+use crate::types::{Effect, Note, Speed, Volume};
 use crate::utils::{parse_hex_string, simplify_string};
 
 #[derive(Clone)]
@@ -89,12 +88,12 @@ impl Sound {
         self.tones.clear();
         for c in simplify_string(tone_str).chars() {
             let tone = match c {
-                't' => TONE_TRIANGLE,
-                's' => TONE_SQUARE,
-                'p' => TONE_PULSE,
-                'n' => TONE_NOISE,
-                'i' => TONE_SINE,
-                'w' => TONE_SAW,
+                't' => Tone::Triangle,
+                's' => Tone::Square,
+                'p' => Tone::Pulse,
+                'n' => Tone::Noise,
+                'i' => Tone::Sine,
+                'w' => Tone::Saw,
                 _ => panic!("Invalid sound tone '{c}'"),
             };
             self.tones.push(tone);
@@ -193,12 +192,24 @@ impl ResourceItem for Sound {
                     self.notes.push(parse_hex_string(&value).unwrap() as i8);
                 });
                 continue;
+            } else if i == 1 {
+                string_loop!(j, value, line, 1, {
+                    self.tones.push(match parse_hex_string(&value).unwrap() {
+                        0 => Tone::Triangle,
+                        1 => Tone::Square,
+                        2 => Tone::Pulse,
+                        3 => Tone::Noise,
+                        4 => Tone::Sine,
+                        5 => Tone::Saw,
+                        _ => panic!(),
+                    });
+                });
+                continue;
             } else if i == 4 {
                 self.speed = line.parse().unwrap();
                 continue;
             }
             let data = match i {
-                1 => &mut self.tones,
                 2 => &mut self.volumes,
                 3 => &mut self.effects,
                 _ => panic!(),
@@ -227,13 +238,22 @@ mod tests {
     #[test]
     fn set() {
         let sound = Sound::new();
-        sound.lock().set("c0d-0d0d#0", "tspn", "0123", "nsvf", 123);
-        assert_eq!(&sound.lock().notes, &vec![0, 1, 2, 3]);
+        sound
+            .lock()
+            .set("c0d-0d0d#0e0f0", "tspniw", "012345", "nsvf", 123);
+        assert_eq!(&sound.lock().notes, &vec![0, 1, 2, 3, 4, 5]);
         assert_eq!(
             &sound.lock().tones,
-            &vec![TONE_TRIANGLE, TONE_SQUARE, TONE_PULSE, TONE_NOISE]
+            &vec![
+                Tone::Triangle,
+                Tone::Square,
+                Tone::Pulse,
+                Tone::Noise,
+                Tone::Sine,
+                Tone::Saw
+            ]
         );
-        assert_eq!(&sound.lock().volumes, &vec![0, 1, 2, 3]);
+        assert_eq!(&sound.lock().volumes, &vec![0, 1, 2, 3, 4, 5]);
         assert_eq!(
             &sound.lock().effects,
             &vec![EFFECT_NONE, EFFECT_SLIDE, EFFECT_VIBRATO, EFFECT_FADEOUT]
@@ -253,10 +273,17 @@ mod tests {
     #[test]
     fn set_tone() {
         let sound = Sound::new();
-        sound.lock().set_tones(" t s p n ");
+        sound.lock().set_tones(" t s p n i w ");
         assert_eq!(
             &sound.lock().tones,
-            &vec![TONE_TRIANGLE, TONE_SQUARE, TONE_PULSE, TONE_NOISE]
+            &vec![
+                Tone::Triangle,
+                Tone::Square,
+                Tone::Pulse,
+                Tone::Noise,
+                Tone::Sine,
+                Tone::Saw
+            ]
         );
     }
 

@@ -1,11 +1,13 @@
+use std::f64::consts::PI;
+
 use crate::blipbuf::BlipBuf;
 use crate::settings::{
-    CLOCK_RATE, EFFECT_FADEOUT, EFFECT_NONE, EFFECT_SLIDE, EFFECT_VIBRATO, NOISE_VOLUME_FACTOR,
-    NUM_CLOCKS_PER_TICK, OSCILLATOR_RESOLUTION, PULSE_VOLUME_FACTOR, SAW_VOLUME_FACTOR,
-    SINE_VOLUME_FACTOR, SQUARE_VOLUME_FACTOR, TONE_NOISE, TONE_PULSE, TONE_SAW, TONE_SINE,
-    TONE_SQUARE, TONE_TRIANGLE, TRIANGLE_VOLUME_FACTOR, VIBRATO_DEPTH, VIBRATO_FREQUENCY,
+    Tone, CLOCK_RATE, EFFECT_FADEOUT, EFFECT_NONE, EFFECT_SLIDE, EFFECT_VIBRATO,
+    NOISE_VOLUME_FACTOR, NUM_CLOCKS_PER_TICK, OSCILLATOR_RESOLUTION, PULSE_VOLUME_FACTOR,
+    SAW_VOLUME_FACTOR, SINE_VOLUME_FACTOR, SQUARE_VOLUME_FACTOR, TRIANGLE_VOLUME_FACTOR,
+    VIBRATO_DEPTH, VIBRATO_FREQUENCY,
 };
-use crate::types::{Effect, Tone};
+use crate::types::Effect;
 
 const VIBRATO_PERIOD: u32 =
     (CLOCK_RATE as f64 / VIBRATO_FREQUENCY / OSCILLATOR_RESOLUTION as f64) as u32;
@@ -42,7 +44,7 @@ impl Oscillator {
     pub fn new() -> Self {
         Self {
             pitch: Self::note_to_pitch(0.0),
-            tone: TONE_TRIANGLE,
+            tone: Tone::Triangle,
             volume: 0.0,
             effect: EFFECT_NONE,
             duration: 0,
@@ -96,13 +98,12 @@ impl Oscillator {
             let last_amplitude = self.amplitude;
             self.phase = (self.phase + 1) % OSCILLATOR_RESOLUTION;
             self.amplitude = (match self.tone {
-                TONE_TRIANGLE => Self::triangle(self.phase) * TRIANGLE_VOLUME_FACTOR,
-                TONE_SQUARE => Self::square(self.phase) * SQUARE_VOLUME_FACTOR,
-                TONE_PULSE => Self::pulse(self.phase) * PULSE_VOLUME_FACTOR,
-                TONE_NOISE => self.noise(self.phase) * NOISE_VOLUME_FACTOR,
-                TONE_SINE => Self::sine(self.phase) * SINE_VOLUME_FACTOR,
-                TONE_SAW => Self::saw(self.phase) * SAW_VOLUME_FACTOR,
-                _ => panic!("Invalid tone '{}'", self.tone),
+                Tone::Triangle => Self::triangle(self.phase) * TRIANGLE_VOLUME_FACTOR,
+                Tone::Square => Self::square(self.phase) * SQUARE_VOLUME_FACTOR,
+                Tone::Pulse => Self::pulse(self.phase) * PULSE_VOLUME_FACTOR,
+                Tone::Noise => self.noise(self.phase) * NOISE_VOLUME_FACTOR,
+                Tone::Sine => Self::sine(self.phase) * SINE_VOLUME_FACTOR,
+                Tone::Saw => Self::saw(self.phase) * SAW_VOLUME_FACTOR,
             } * self.volume
                 * i16::MAX as f64) as i16;
             blip_buf.add_delta(
@@ -171,10 +172,10 @@ impl Oscillator {
     }
 
     fn saw(phase: u32) -> f64 {
-        (OSCILLATOR_RESOLUTION - phase) as f64 / OSCILLATOR_RESOLUTION as f64 * 2.0 - 1.0
+        phase as f64 / OSCILLATOR_RESOLUTION as f64 * -2.0 + 1.0
     }
 
     fn sine(phase: u32) -> f64 {
-        (phase as f64 / OSCILLATOR_RESOLUTION as f64 * 3.1415 * 2.0).sin()
+        (phase as f64 / OSCILLATOR_RESOLUTION as f64 * PI * 2.0).sin()
     }
 }

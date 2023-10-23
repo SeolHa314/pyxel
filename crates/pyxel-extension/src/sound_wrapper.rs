@@ -68,20 +68,54 @@ impl Tones {
         impl_len_method_for_list!(self)
     }
 
-    fn __getitem__(&self, index: isize) -> PyResult<Tone> {
-        impl_getitem_method_for_list!(self, index)
+    fn __getitem__(&self, index: isize) -> PyResult<u8> {
+        //impl_getitem_method_for_list!(self, index)
+        if index < self.list().len() as isize {
+            Ok(self.list()[index as usize].clone() as u8)
+        } else {
+            Err(pyo3::exceptions::PyIndexError::new_err(
+                "list index out of range",
+            ))
+        }
     }
 
-    fn __setitem__(&mut self, index: isize, value: Tone) -> PyResult<()> {
-        impl_setitem_method_for_list!(self, index, value)
+    fn __setitem__(&mut self, index: isize, value: u8) -> PyResult<()> {
+        if index < self.list_mut().len() as isize {
+            self.list_mut()[index as usize] = match value {
+                0 => Tone::Triangle,
+                1 => Tone::Square,
+                2 => Tone::Pulse,
+                3 => Tone::Noise,
+                4 => Tone::Sine,
+                5 => Tone::Saw,
+                _ => panic!(),
+            };
+            Ok(())
+        } else {
+            Err(pyo3::exceptions::PyIndexError::new_err(
+                "list assignment index out of range",
+            ))
+        }
     }
 
-    pub fn from_list(&mut self, lst: Vec<Tone>) -> PyResult<()> {
-        impl_from_list_method_for_list!(self, lst)
+    pub fn from_list(&mut self, lst: Vec<u8>) -> PyResult<()> {
+        *self.list_mut() = lst
+            .iter()
+            .map(|&x| match x {
+                0 => Tone::Triangle,
+                1 => Tone::Square,
+                2 => Tone::Pulse,
+                3 => Tone::Noise,
+                4 => Tone::Sine,
+                5 => Tone::Saw,
+                _ => panic!(),
+            })
+            .collect();
+        Ok(())
     }
 
-    pub fn to_list(&self) -> PyResult<Vec<Tone>> {
-        impl_to_list_method_for_list!(self)
+    pub fn to_list(&self) -> PyResult<Vec<u8>> {
+        Ok(self.list().iter().map(|&x| x as u8).collect())
     }
 }
 
